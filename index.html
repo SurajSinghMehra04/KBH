@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kon Banega Hero — Quiz Championship</title>
+  <meta name="description" content="India's ultimate quiz championship. Earn points, evolve your Hero avatar, and win prizes!" />
+  <meta property="og:title" content="Kon Banega Hero" />
+  <meta property="og:description" content="15 AI-powered questions across 3 levels. Play daily, evolve your hero, win the Grand Lottery!" />
+  <meta name="theme-color" content="#07070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- TAB SWITCH WARNING OVERLAY -->
+  <div class="tab-warning" id="tab-warning">
+    <div class="tw-inner">
+      <div class="tw-icon">🚨</div>
+      <h2 class="tw-title">Tab Switch Detected!</h2>
+      <p class="tw-sub">You switched tabs during the quiz. That's not fair play, Hero! Your attempt has been flagged.</p>
+      <p class="tw-count" id="tw-count">Violations this session: 1</p>
+      <button class="btn btn-primary btn-lg" onclick="dismissTabWarning()">Resume Quiz →</button>
+      <button class="btn btn-danger" onclick="forfeitQuiz()">Forfeit This Round</button>
+    </div>
+  </div>
+
+  <!-- BACKGROUND ORBS -->
+  <div class="bg-orbs" aria-hidden="true">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- NAV -->
+    <nav class="navbar">
+      <div class="nav-logo" onclick="showScreen('home')" role="button" tabindex="0" aria-label="Go to home">
+        <span class="logo-text">Kon Banega Hero</span>
+        <span class="logo-sub">Quiz Championship</span>
+      </div>
+      <div class="nav-right" id="nav-right">
+        <button class="btn btn-ghost btn-sm" onclick="openAuthModal('login')">Log in</button>
+        <button class="btn btn-primary btn-sm" onclick="openAuthModal('signup')">Sign up free</button>
+      </div>
+    </nav>
+
+    <!-- ===== HOME SCREEN ===== -->
+    <div class="screen active" id="screen-home">
+      <section class="hero-section">
+        <div class="hero-tag">🏆 Grand Lottery — Win Prizes Twice a Year!</div>
+        <h1 class="hero-title">
+          <span class="t-amber">Kon</span>
+          <span class="t-grad"> Banega</span><br />
+          <span class="t-red">Hero?</span>
+        </h1>
+        <p class="hero-sub">15 AI-powered questions across 3 levels.<br />Earn points, evolve your Hero avatar, and compete for glory!</p>
+        <div class="hero-btns">
+          <button class="btn btn-primary btn-lg" onclick="startQuiz()">Start Quest ⚡</button>
+          <button class="btn btn-ghost btn-lg" onclick="showScreen('leaderboard')">Leaderboard 🏆</button>
+        </div>
+      </section>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val t-grad">12,847</div>
+          <div class="stat-lbl">Active Heroes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val t-amber">3,421</div>
+          <div class="stat-lbl">Questions Answered Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val t-green">180</div>
+          <div class="stat-lbl">Days to Next Lottery</div>
+        </div>
+      </div>
+
+      <div class="section-intro">
+        <h2>Choose Your Challenge</h2>
+        <p>5 questions per tier — complete all 3 for maximum points</p>
+      </div>
+
+      <div class="sections-grid">
+        <div class="section-card easy" onclick="startQuizSection('easy')" role="button" tabindex="0">
+          <div class="sec-badge">Easy</div>
+          <div class="sec-title">Foundation</div>
+          <div class="sec-desc">Class 1–5 concepts. Warm up your mind!</div>
+          <div class="sec-pts">+1 point per correct answer</div>
+        </div>
+        <div class="section-card mod" onclick="startQuizSection('moderate')" role="button" tabindex="0">
+          <div class="sec-badge">Moderate</div>
+          <div class="sec-title">Challenger</div>
+          <div class="sec-desc">Class 6–8 topics. Prove your skills!</div>
+          <div class="sec-pts">+2 points per correct answer</div>
+        </div>
+        <div class="section-card hard" onclick="startQuizSection('hard')" role="button" tabindex="0">
+          <div class="sec-badge">Hard</div>
+          <div class="sec-title">Expert</div>
+          <div class="sec-desc">Class 9–10 curriculum. Elite only!</div>
+          <div class="sec-pts">+3 points per correct answer</div>
+        </div>
+      </div>
+
+      <div class="lottery-banner">
+        <div class="lottery-icon">🎰</div>
+        <div class="lottery-content">
+          <h2>The Grand Hero Lottery</h2>
+          <p>Login and play for <strong>6 consecutive months</strong> to qualify for our bi-annual prize draw. The more active you are, the higher your lottery score!</p>
+          <div class="lottery-stats">
+            <div class="ls-item"><div class="ls-val t-amber">Jan &amp; Jul</div><div class="ls-lbl">Draw Dates</div></div>
+            <div class="ls-item"><div class="ls-val t-green">180+</div><div class="ls-lbl">Days Needed</div></div>
+            <div class="ls-item"><div class="ls-val t-accent">2×/Year</div><div class="ls-lbl">Prize Events</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== QUIZ SCREEN ===== -->
+    <div class="screen" id="screen-quiz">
+      <div id="quiz-loading" class="loading-box">
+        <div class="spinner"></div>
+        <p id="loading-msg">Generating questions with AI...</p>
+      </div>
+      <div id="quiz-content" style="display:none">
+        <div class="quiz-header">
+          <div id="qsec-badge" class="sec-badge easy">Easy</div>
+          <div class="quiz-progress">
+            <div class="progress-bar"><div class="progress-fill" id="q-progress" style="width:20%"></div></div>
+            <div class="progress-text" id="q-prog-text">Question 1 of 5</div>
+          </div>
+          <div class="q-timer" id="q-timer">30</div>
+        </div>
+        <div class="question-card">
+          <div class="q-number" id="q-number">Question 1</div>
+          <div class="q-text" id="q-text">Loading...</div>
+          <div class="options-grid" id="options-grid"></div>
+        </div>
+        <div class="quiz-feedback" id="quiz-feedback"></div>
+        <div class="next-btn-wrap" id="next-btn-wrap" style="display:none">
+          <button class="btn btn-primary btn-lg" onclick="nextQuestion()">Next Question →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RESULT SCREEN ===== -->
+    <div class="screen" id="screen-result">
+      <div class="result-hero">
+        <div class="result-emoji" id="res-emoji">🎉</div>
+        <h2 class="result-title" id="res-title">Section Complete!</h2>
+        <div class="result-pts" id="res-pts">+8 pts</div>
+        <p class="result-sub" id="res-sub">You got 4/5 correct!</p>
+      </div>
+      <div class="result-breakdown">
+        <div class="rb-card"><div class="rb-score t-green" id="rb-correct">4</div><div class="rb-label">Correct</div></div>
+        <div class="rb-card"><div class="rb-score t-red" id="rb-wrong">1</div><div class="rb-label">Wrong</div></div>
+        <div class="rb-card"><div class="rb-score t-amber" id="rb-earned">8</div><div class="rb-label">Points Earned</div></div>
+      </div>
+      <div class="result-actions">
+        <button class="btn btn-primary btn-lg" onclick="startQuiz()">Play Again ⚡</button>
+        <button class="btn btn-ghost btn-lg" onclick="showScreen('home')">Back to Home</button>
+        <button class="btn btn-ghost btn-lg" id="dash-btn" style="display:none" onclick="showScreen('dashboard')">Dashboard 📊</button>
+      </div>
+    </div>
+
+    <!-- ===== DASHBOARD SCREEN ===== -->
+    <div class="screen" id="screen-dashboard">
+      <div class="dash-top">
+        <div>
+          <h1 class="page-title" id="dash-welcome">My Dashboard</h1>
+          <p class="page-sub">Track your progress and Hero evolution</p>
+        </div>
+        <div id="dash-avatar-wrap"></div>
+      </div>
+
+      <div class="streak-banner">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-info">
+          <h3 id="streak-title">7-Day Streak!</h3>
+          <p id="streak-desc">Keep it up, Hero!</p>
+        </div>
+        <div class="streak-count-wrap">
+          <div class="streak-number t-amber" id="streak-count">7</div>
+          <div class="streak-lbl">day streak</div>
+        </div>
+      </div>
+
+      <div class="evo-card">
+        <div class="evo-card-header">
+          <div>
+            <h3>🦸 Hero Avatar Evolution</h3>
+            <p>Your avatar evolves as you earn more points</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="openAvatarBuilder()">Customize</button>
+        </div>
+        <div class="evo-path" id="evo-path-display"></div>
+        <div class="evo-card-footer">
+          <span>Current: <strong class="t-accent" id="evo-tier-name">Novice</strong></span>
+          <span class="t-muted" id="evo-next-info">50 pts to next evolution</span>
+        </div>
+        <div class="progress-bar mt-6"><div class="progress-fill accent" id="evo-bar" style="width:0%"></div></div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-val t-amber" id="total-pts-dash">0</div><div class="stat-lbl">Total Points</div></div>
+        <div class="stat-card"><div class="stat-val t-accent" id="total-quizzes">0</div><div class="stat-lbl">Quizzes Done</div></div>
+        <div class="stat-card"><div class="stat-val t-green" id="total-days">0</div><div class="stat-lbl">Active Days</div></div>
+      </div>
+
+      <div class="lottery-card-dash">
+        <div class="lottery-title">🎰 Lottery Qualification</div>
+        <p class="lottery-desc" id="lottery-desc">Play daily to qualify for the bi-annual lottery draw!</p>
+        <div class="lot-progress-header"><span>Progress to Qualify</span><span id="lot-pct">0%</span></div>
+        <div class="progress-bar mt-6"><div class="lot-fill" id="lot-bar-fill" style="width:0%"></div></div>
+        <p class="lot-label" id="lot-label">Need 180 active days to qualify</p>
+      </div>
+
+      <h3 class="section-heading">Recent History</h3>
+      <div class="table-wrap">
+        <table class="history-table">
+          <thead><tr><th>Date</th><th>Section</th><th>Score</th><th>Points</th></tr></thead>
+          <tbody id="history-body">
+            <tr><td colspan="4" class="empty-row">Play your first quiz!</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== LEADERBOARD SCREEN ===== -->
+    <div class="screen" id="screen-leaderboard">
+      <h1 class="page-title">🏆 Hero Leaderboard</h1>
+      <p class="page-sub">Top champions this month</p>
+      <div id="lb-list"></div>
+    </div>
+
+  </div><!-- end .wrap -->
+
+  <!-- ===== AUTH MODAL ===== -->
+  <div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('auth-modal')" aria-label="Close">✕</button>
+      <h2 id="modal-title">Welcome back!</h2>
+      <p class="modal-sub" id="modal-sub">Sign in to save your points</p>
+      <div id="signup-fields" style="display:none">
+        <div class="form-row">
+          <div class="form-group"><label for="fname">First Name</label><input type="text" id="fname" placeholder="Arjun" autocomplete="given-name" /></div>
+          <div class="form-group"><label for="lname">Last Name</label><input type="text" id="lname" placeholder="Sharma" autocomplete="family-name" /></div>
+        </div>
+      </div>
+      <div class="form-group"><label for="email">Email</label><input type="email" id="email" placeholder="you@example.com" autocomplete="email" /></div>
+      <div class="form-group"><label for="password">Password</label><input type="password" id="password" placeholder="••••••••" autocomplete="current-password" /></div>
+      <div class="form-error" id="auth-error" style="display:none"></div>
+      <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+      <p class="auth-switch" id="auth-switch">
+        Don't have an account? <a onclick="toggleAuth()" role="button" tabindex="0">Sign up free</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== AVATAR BUILDER MODAL ===== -->
+  <div class="modal-overlay" id="avatar-modal" role="dialog" aria-modal="true" aria-label="Avatar Builder">
+    <div class="modal modal-wide">
+      <button class="modal-close" onclick="closeModal('avatar-modal')" aria-label="Close">✕</button>
+      <h2>Build Your Hero Avatar</h2>
+      <p class="modal-sub">Customize your look — evolves automatically as you earn points!</p>
+      <div class="ava-preview-wrap">
+        <div class="ava-big" id="ava-preview-big"></div>
+        <div class="evo-tag" id="ava-evo-tag">Novice Hero</div>
+      </div>
+      <div class="form-group">
+        <label for="hero-name">Hero Name</label>
+        <input type="text" id="hero-name" placeholder="Enter your hero name..." maxlength="20" />
+      </div>
+      <div class="trait-section">
+        <div class="trait-label">Skin Tone</div>
+        <div class="skin-row">
+          <button class="skin-btn" data-skin="0" onclick="setSkin(0)" style="background:#FFDBB4" aria-label="Light skin"></button>
+          <button class="skin-btn" data-skin="1" onclick="setSkin(1)" style="background:#D4956A" aria-label="Medium skin"></button>
+          <button class="skin-btn" data-skin="2" onclick="setSkin(2)" style="background:#8B5E3C" aria-label="Brown skin"></button>
+          <button class="skin-btn" data-skin="3" onclick="setSkin(3)" style="background:#4A2C17" aria-label="Dark skin"></button>
+        </div>
+      </div>
+      <div class="trait-section">
+        <div class="trait-label">Hair Style</div>
+        <div class="trait-grid">
+          <button class="trait-btn active" data-hair="0" onclick="setHair(0)">⬜ Short</button>
+          <button class="trait-btn" data-hair="1" onclick="setHair(1)">🟫 Long</button>
+          <button class="trait-btn" data-hair="2" onclick="setHair(2)">⬛ Curly</button>
+          <button class="trait-btn" data-hair="3" onclick="setHair(3)">🟨 Spiky</button>
+        </div>
+      </div>
+      <div class="trait-section">
+        <div class="trait-label">Hero Aura Color</div>
+        <div class="trait-grid">
+          <button class="trait-btn active" data-aura="purple" onclick="setAura('purple')">💜 Mystic Purple</button>
+          <button class="trait-btn" data-aura="blue" onclick="setAura('blue')">💙 Ocean Blue</button>
+          <button class="trait-btn" data-aura="green" onclick="setAura('green')">💚 Forest Green</button>
+          <button class="trait-btn" data-aura="red" onclick="setAura('red')">❤️ Flame Red</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="saveAvatar()">Save My Hero →</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/avatar.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
