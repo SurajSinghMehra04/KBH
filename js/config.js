@@ -4,8 +4,8 @@
 //  Get them from: https://supabase.com → Project Settings → API
 // ============================================================
 
-const SUPABASE_URL  = 'https://YOUR_PROJECT_REF.supabase.co';
-const SUPABASE_ANON = 'YOUR_ANON_PUBLIC_KEY';
+const SUPABASE_URL  = 'https://brwlqysolphnurdkudpi.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJyd2xxeXNvbHBobnVyZGt1ZHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3NjQ3NDMsImV4cCI6MjA5NTM0MDc0M30.i3_9C4rZTZe4_doqx_mc67YRCdo6Ah1upJBBrZTsplM';
 
 // Anthropic proxy endpoint — set this to your Netlify / Vercel function URL
 // Leave as-is if you are using the built-in Claude API (see README).
