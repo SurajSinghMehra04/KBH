@@ -228,3 +228,46 @@ function showToast(msg, type = 'success') {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => (t.className = 'toast'), 3200);
 }
+
+// ── Home stats ────────────────────────────────────────────
+// Called on page load. Fetches live numbers from Supabase
+// and animates them into the homepage stat cards.
+async function loadHomeStats() {
+  try {
+    const stats = await dbGetHomeStats();
+
+    _animateCount('stat-active-heroes',   stats.active_heroes   || 0);
+    _animateCount('stat-questions-today', stats.questions_today  || 0);
+    _animateCount('stat-days-lottery',    stats.days_to_lottery  || 0);
+
+    // Also update lottery banner number if present
+    const bannerEl = document.querySelector('.ls-val.t-green');
+    if (bannerEl) bannerEl.textContent = (stats.days_to_lottery || 0) + '+';
+
+  } catch (e) {
+    console.warn('[KBH] Could not load home stats:', e.message);
+    // Leave dashes in place — better than showing stale hardcoded numbers
+  }
+}
+
+// Smooth count-up animation
+function _animateCount(elId, target) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  const duration = 1200; // ms
+  const steps    = 40;
+  const stepTime = duration / steps;
+  let   current  = 0;
+
+  const increment = target / steps;
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    // Format with commas for readability
+    el.textContent = Math.floor(current).toLocaleString('en-IN');
+  }, stepTime);
+}
