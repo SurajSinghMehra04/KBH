@@ -240,9 +240,6 @@ async function loadHomeStats() {
     _animateCount('stat-questions-today', stats.questions_today  || 0);
     _animateCount('stat-days-lottery',    stats.days_to_lottery  || 0);
 
-    // Also update lottery banner number if present
-    const bannerEl = document.querySelector('.ls-val.t-green');
-    if (bannerEl) bannerEl.textContent = (stats.days_to_lottery || 0) + '+';
 
   } catch (e) {
     console.warn('[KBH] Could not load home stats:', e.message);
